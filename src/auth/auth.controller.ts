@@ -5,19 +5,17 @@ import { Role } from 'src/post/decorators/role.decorator';
 import { Roles } from 'src/post/guards/role.enum';
 import { RoleGuard } from 'src/post/guards/role.guard';
 import { AuthService } from './auth.service';
-import { AccessTokenAuthGuard } from './guards/access-token.guard';
-import { RefreshTokenAuthGuard } from './guards/refresh-token.guard';
+import { AccessTokenAuthGuard } from '../guards/access-token.guard';
+import { RefreshTokenAuthGuard } from '../guards/refresh-token.guard';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly auth: AuthService) {}
 
-  @UseGuards(AccessTokenAuthGuard)
+  @UseGuards(AccessTokenAuthGuard, RoleGuard)
   @Role(Roles.User)
-  @UseGuards(RoleGuard)
   @Get('/logout')
   async logout(@Req() req: Request) {
-    console.log(req.user);
     await this.auth.logout(req.user['sub']);
   }
 

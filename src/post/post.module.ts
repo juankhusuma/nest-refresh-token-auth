@@ -7,13 +7,7 @@ import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [PrismaModule],
-  providers: [
-    PostService,
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: RoleGuard,
-    // },
-  ],
+  providers: [PostService, RoleGuard],
   controllers: [PostController],
 })
 export class PostModule {}

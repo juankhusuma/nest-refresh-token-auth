@@ -23,6 +23,7 @@ export class AuthService {
     const { refreshToken } = await this.token(
       _user.id.toString(),
       _user.username,
+      'user',
     );
     await this.user.update({ username }, { token: refreshToken });
     return refreshToken;
@@ -41,12 +42,13 @@ export class AuthService {
     return null;
   }
 
-  private async token(uid: string, username: string) {
+  private async token(uid: string, username: string, role: string) {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwt.signAsync(
         {
           sub: uid,
           username,
+          role,
         },
         {
           secret: process.env.ACCESS_TOKEN_SECRET,
@@ -67,8 +69,12 @@ export class AuthService {
   }
 
   async login(username: string, password: string) {
-    const data = await this.validate(username, password);
-    const tokens = await this.token(data.id.toString(), data.username);
+    const data: any = await this.validate(username, password);
+    const tokens = await this.token(
+      data.id.toString(),
+      data.username,
+      data.role,
+    );
     await this.refresh(data.id.toString(), tokens.refreshToken);
     return tokens;
   }
