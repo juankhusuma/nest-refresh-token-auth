@@ -68,6 +68,16 @@ export class AuthService {
     await this.user.update({ id: +uid }, { token: hasedToken });
   }
 
+  async genRefreshToken(uid: string, refreshToken: string) {
+    const user = await this.user.get({ id: +uid });
+    if (await compare(refreshToken, user.token)) {
+      const tokens = await this.token(uid, user.username, user.role);
+      await this.refresh(user.id.toString(), tokens.refreshToken);
+      return tokens;
+    }
+    return null;
+  }
+
   async login(username: string, password: string) {
     const data: any = await this.validate(username, password);
     const tokens = await this.token(
